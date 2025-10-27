@@ -21,6 +21,7 @@ let currentVoter = null;
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
+    checkExistingSession();
 });
 
 function setupEventListeners() {
@@ -41,17 +42,68 @@ function setupEventListeners() {
     }
 }
 
-// Initialize Google Sign-In when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    setupEventListeners();
-    
-    // Check if user is already signed in
-    firebase.auth().onAuthStateChanged(function(user) {
-        if (user && currentVoter) {
-            console.log('User already signed in:', user.email);
+// Check for existing session on page load
+async function checkExistingSession() {
+    try {
+        console.log('🔍 Checking for existing session...');
+        
+        // Check if user has an active session with the backend
+        const response = await fetch('/voter-info', {
+            method: 'GET',
+            credentials: 'same-origin'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success && result.voter) {
+            console.log('✅ Found existing session for:', result.voter.name);
+            currentVoter = result.voter;
+            showVoterDashboard();
+            return;
         }
-    });
-});
+        
+        console.log('ℹ️ No existing session found, showing login');
+        
+        // Initialize Firebase auth state listener
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user && !currentVoter) {
+                console.log('🔥 Firebase user detected, verifying with backend...');
+                verifyFirebaseUser(user);
+            }
+        });
+        
+    } catch (error) {
+        console.error('❌ Error checking session:', error);
+        // Show login form if session check fails
+        document.getElementById('login-section').classList.remove('d-none');
+        document.getElementById('voter-dashboard').classList.add('d-none');
+    }
+}
+
+// Verify Firebase user with backend
+async function verifyFirebaseUser(user) {
+    try {
+        const idToken = await user.getIdToken();
+        
+        const verifyResult = await apiCall('/verify-google-token', {
+            method: 'POST',
+            body: JSON.stringify({ idToken: idToken })
+        });
+        
+        if (verifyResult.success) {
+            currentVoter = verifyResult.voter;
+            console.log('✅ Session restored for:', currentVoter.name);
+            showVoterDashboard();
+        } else {
+            console.log('❌ Backend verification failed:', verifyResult.message);
+            // Sign out from Firebase if backend verification fails
+            firebase.auth().signOut();
+        }
+    } catch (error) {
+        console.error('❌ Error verifying Firebase user:', error);
+        firebase.auth().signOut();
+    }
+}
 
 // Utility functions
 function showAlert(message, type = 'info') {
@@ -658,16 +710,28 @@ function refreshStatus() {
 
 // Google Sign-In doesn't need rate limit suggestions
 
-function logout() {
+async function logout() {
     if (confirm('Are you sure you want to logout?')) {
-        // Sign out from Google/Firebase
-        firebase.auth().signOut().then(() => {
+        try {
+            // Clear backend session first
+            await apiCall('/logout', { method: 'POST' });
+            
+            // Sign out from Google/Firebase
+            await firebase.auth().signOut();
+            
             console.log('✅ User signed out successfully');
             currentVoter = null;
+            
+            // Clear any cached data
+            sessionStorage.clear();
+            localStorage.removeItem('voterSession');
+            
+            // Reload page to show login form
             window.location.reload();
-        }).catch((error) => {
+        } catch (error) {
             console.error('❌ Sign out error:', error);
+            // Force reload even if logout fails
             window.location.reload();
-        });
+        }
     }
 }

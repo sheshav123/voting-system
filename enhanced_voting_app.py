@@ -27,6 +27,7 @@ app.secret_key = 'enhanced_voting_system_2024'
 app.config['SESSION_COOKIE_SECURE'] = False
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['PERMANENT_SESSION_LIFETIME'] = 86400  # 24 hours
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
@@ -438,8 +439,10 @@ def verify_google_token():
         session['verified'] = True
         session['email'] = email
         session['voter'] = voter
+        session['phone'] = voter['phone']  # Store phone for easy access
         session['firebase_uid'] = firebase_uid
         session['auth_method'] = 'google'
+        session.permanent = True  # Make session persistent
         
         print(f"✅ Session created for voter: {voter['name']}")
         
@@ -507,7 +510,10 @@ def voter_info():
             return jsonify({'success': False, 'message': 'Authentication required'})
         
         voter = session.get('voter')
-        phone = session.get('phone')
+        phone = voter.get('phone') if voter else session.get('phone')
+        
+        if not voter or not phone:
+            return jsonify({'success': False, 'message': 'Voter information not found in session'})
         
         # Check if voted in current election
         has_voted = voting_system.has_voted_in_current_election(phone)
@@ -573,6 +579,7 @@ def admin_login():
         
         if secret_key == 'admin123':  # Simple admin password
             session['admin'] = True
+            session.permanent = True  # Make admin session persistent
             return jsonify({'success': True, 'message': 'Admin authenticated'})
         else:
             return jsonify({'success': False, 'message': 'Invalid credentials'})
@@ -1085,6 +1092,24 @@ def auth_status():
 @app.route('/debug-firebase')
 def debug_firebase():
     return render_template('debug_firebase.html')
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    try:
+        # Clear all session data
+        session.clear()
+        return jsonify({'success': True, 'message': 'Logged out successfully'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
+@app.route('/admin/logout', methods=['POST'])
+def admin_logout():
+    try:
+        # Clear admin session
+        session.pop('admin', None)
+        return jsonify({'success': True, 'message': 'Admin logged out successfully'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
 
 if __name__ == '__main__':
     import os

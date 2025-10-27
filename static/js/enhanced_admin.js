@@ -11,7 +11,45 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
+    // Check for existing admin session
+    checkAdminSession();
 });
+
+// Check for existing admin session
+async function checkAdminSession() {
+    try {
+        console.log('🔍 Checking for existing admin session...');
+        
+        // Try to access admin data to check if session exists
+        const result = await apiCall('/admin/elections');
+        
+        if (result.success) {
+            console.log('✅ Found existing admin session');
+            // Hide login form and show dashboard
+            document.getElementById('admin-login').classList.add('d-none');
+            document.getElementById('admin-dashboard').classList.remove('d-none');
+            
+            // Load initial data
+            loadElectionStatus();
+            refreshResults();
+            loadCandidates();
+            loadElections();
+            loadVoters();
+            loadPastElectionsSummary();
+        } else {
+            console.log('ℹ️ No existing admin session found');
+            // Show login form
+            document.getElementById('admin-login').classList.remove('d-none');
+            document.getElementById('admin-dashboard').classList.add('d-none');
+        }
+    } catch (error) {
+        console.error('❌ Error checking admin session:', error);
+        // Show login form if session check fails
+        document.getElementById('admin-login').classList.remove('d-none');
+        document.getElementById('admin-dashboard').classList.add('d-none');
+    }
+}
 
 // Utility functions
 function showAlert(message, type = 'info', containerId = 'admin-alert-container') {
