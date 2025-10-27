@@ -515,6 +515,14 @@ def voter_info():
         if not voter or not phone:
             return jsonify({'success': False, 'message': 'Voter information not found in session'})
         
+        # Get fresh voter data from database to ensure we have latest photo
+        fresh_voter_data = voting_system.get_voter_by_phone(phone)
+        if fresh_voter_data:
+            # Update session with fresh data (especially photo)
+            session['voter'] = fresh_voter_data
+            session.modified = True
+            voter = fresh_voter_data
+        
         # Check if voted in current election
         has_voted = voting_system.has_voted_in_current_election(phone)
         current_election = voting_system.get_current_election()
@@ -1067,6 +1075,11 @@ def upload_voter_photo():
             
             # Update voter record
             if voting_system.update_voter_photo(phone, filename):
+                # Update session data with new photo
+                if session.get('voter') and session.get('voter').get('phone') == phone:
+                    session['voter']['photo'] = filename
+                    session.modified = True
+                
                 return jsonify({'success': True, 'message': 'Photo uploaded successfully', 'filename': filename})
             else:
                 return jsonify({'success': False, 'message': 'Failed to update photo'})

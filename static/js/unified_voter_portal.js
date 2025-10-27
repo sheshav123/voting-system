@@ -58,6 +58,8 @@ async function checkExistingSession() {
         if (result.success && result.voter) {
             console.log('✅ Found existing session for:', result.voter.name);
             currentVoter = result.voter;
+            console.log('Voter data loaded:', currentVoter);
+            console.log('Voter photo:', currentVoter.photo);
             showVoterDashboard();
             return;
         }
@@ -231,21 +233,65 @@ function showVoterDashboard() {
     document.getElementById('voter-dashboard').classList.remove('d-none');
     
     // Populate voter details
-    document.getElementById('voter-name').textContent = currentVoter.name;
-    document.getElementById('voter-roll').textContent = currentVoter.roll_number;
-    document.getElementById('voter-phone').textContent = currentVoter.phone;
-    document.getElementById('voter-email').textContent = currentVoter.email;
+    document.getElementById('voter-name').textContent = currentVoter.name || '-';
+    document.getElementById('voter-roll').textContent = currentVoter.roll_number || '-';
+    document.getElementById('voter-phone').textContent = currentVoter.phone || '-';
+    document.getElementById('voter-email').textContent = currentVoter.email || '-';
     
     // Show voter photo if available
-    if (currentVoter.photo) {
-        const photoContainer = document.getElementById('voter-photo-container');
-        photoContainer.innerHTML = `
-            <img src="/static/uploads/${currentVoter.photo}" alt="${currentVoter.name}" class="voter-photo">
-        `;
-    }
+    updateVoterPhoto();
     
     // Load election status
     loadElectionStatus();
+}
+
+// Function to update voter photo display
+function updateVoterPhoto() {
+    const photoContainer = document.getElementById('voter-photo-container');
+    
+    if (!photoContainer) {
+        console.error('Photo container not found');
+        return;
+    }
+    
+    if (currentVoter && currentVoter.photo) {
+        console.log('Loading voter photo:', currentVoter.photo);
+        
+        // Create image element with error handling
+        const img = document.createElement('img');
+        img.src = `/static/uploads/${currentVoter.photo}`;
+        img.alt = currentVoter.name || 'Voter Photo';
+        img.className = 'voter-photo';
+        
+        // Handle image load success
+        img.onload = function() {
+            console.log('✅ Voter photo loaded successfully');
+            photoContainer.innerHTML = '';
+            photoContainer.appendChild(img);
+        };
+        
+        // Handle image load error
+        img.onerror = function() {
+            console.error('❌ Failed to load voter photo:', currentVoter.photo);
+            showPhotoPlaceholder();
+        };
+        
+    } else {
+        console.log('No voter photo available, showing placeholder');
+        showPhotoPlaceholder();
+    }
+}
+
+// Function to show photo placeholder
+function showPhotoPlaceholder() {
+    const photoContainer = document.getElementById('voter-photo-container');
+    if (photoContainer) {
+        photoContainer.innerHTML = `
+            <div class="voter-photo-placeholder">
+                <i class="fas fa-user fa-2x"></i>
+            </div>
+        `;
+    }
 }
 
 async function loadElectionStatus() {
@@ -681,11 +727,13 @@ async function uploadPhoto() {
         if (result.success) {
             showAlert('Photo uploaded successfully!', 'success');
             
-            // Update photo display
-            const photoContainer = document.getElementById('voter-photo-container');
-            photoContainer.innerHTML = `
-                <img src="/static/uploads/${result.filename}" alt="Voter Photo" class="voter-photo">
-            `;
+            // Update current voter data with new photo
+            if (currentVoter) {
+                currentVoter.photo = result.filename;
+            }
+            
+            // Update photo display using the new function
+            updateVoterPhoto();
             
             // Hide modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('photoUploadModal'));
@@ -703,9 +751,32 @@ async function uploadPhoto() {
 }
 
 // Utility functions
-function refreshStatus() {
-    loadElectionStatus();
-    showAlert('Status refreshed', 'info');
+async function refreshStatus() {
+    try {
+        // Refresh voter info to get latest data including photo
+        const result = await apiCall('/voter-info');
+        if (result.success && result.voter) {
+            currentVoter = result.voter;
+            console.log('Voter data refreshed:', currentVoter);
+            
+            // Update voter details display
+            document.getElementById('voter-name').textContent = currentVoter.name || '-';
+            document.getElementById('voter-roll').textContent = currentVoter.roll_number || '-';
+            document.getElementById('voter-phone').textContent = currentVoter.phone || '-';
+            document.getElementById('voter-email').textContent = currentVoter.email || '-';
+            
+            // Update photo
+            updateVoterPhoto();
+        }
+        
+        // Refresh election status
+        loadElectionStatus();
+        showAlert('Status refreshed', 'info');
+    } catch (error) {
+        console.error('Error refreshing status:', error);
+        loadElectionStatus();
+        showAlert('Status refreshed', 'info');
+    }
 }
 
 // Google Sign-In doesn't need rate limit suggestions
