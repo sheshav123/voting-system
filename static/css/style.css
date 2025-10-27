@@ -160,4 +160,90 @@ body {
         width: 60px;
         height: 60px;
     }
+    
+    .voter-details {
+        padding: 15px;
+    }
+    
+    .results-summary {
+        padding: 15px;
+    }
+    
+    .result-item {
+        padding: 12px;
+    }
+    
+    .btn {
+        min-height: 44px;
+        touch-action: manipulation;
+    }
+    
+    .btn-sm {
+        min-height: 36px;
+    }
+    
+    .form-control {
+        min-height: 44px;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding: 5px;
+    }
+    
+    .card {
+        margin: 5px 0;
+        border-radius: 10px;
+    }
+    
+    .card-header {
+        padding: 10px 15px;
+        border-radius: 10px 10px 0 0 !important;
+    }
+    
+    .card-body {
+        padding: 15px;
+    }
+    
+    .candidate-card {
+        padding: 12px;
+        margin-bottom: 10px;
+    }
+    
+    .candidate-photo {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .btn {
+        font-size: 0.9rem;
+        padding: 8px 16px;
+    }
+    
+    .btn-lg {
+        font-size: 1rem;
+        padding: 10px 20px;
+    }
+    
+    .vote-count {
+        font-size: 1.2rem;
+    }
+    
+    .winner-badge {
+        font-size: 0.7rem;
+        padding: 3px 10px;
+    }
+    
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+    
+    .modal-dialog {
+        margin: 10px;
+    }
+    
+    .modal-content {
+        border-radius: 10px;
+    }
 }
