@@ -25,7 +25,7 @@ jobs:
     
     - name: Run basic tests
       run: |
-        python -c "import enhanced_voting_app; print('App imports successfully')"
+        python -c "import decentralised_voting_app; print('App imports successfully')"
         python -c "import firebase_auth_integration; print('Firebase auth imports successfully')"
         python -c "import firebase_database_service; print('Firebase DB imports successfully')"
 

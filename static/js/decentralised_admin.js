@@ -1,4 +1,4 @@
-// Enhanced Admin Panel JavaScript
+// Decentralised Admin Panel JavaScript
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {

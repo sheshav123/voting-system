@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Enhanced Voting System with Election Management
+Decentralised Voting System with Election Management
 Features:
 - Add/Delete Candidates
 - Start/Stop Elections
@@ -23,7 +23,7 @@ from firebase_auth_integration import firebase_auth_service
 from firebase_database_service import firebase_db
 
 app = Flask(__name__)
-app.secret_key = 'enhanced_voting_system_2024'
+app.secret_key = 'decentralised_voting_system_2024'
 app.config['SESSION_COOKIE_SECURE'] = False
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
@@ -57,7 +57,7 @@ for file_path in [VOTERS_FILE, CANDIDATES_FILE, VOTES_FILE, ELECTIONS_FILE, OTP_
             else:
                 json.dump({}, f)
 
-class EnhancedVotingSystem:
+class DecentralisedVotingSystem:
     def __init__(self):
         pass
     
@@ -384,7 +384,7 @@ voting_system = firebase_db
 # Routes
 @app.route('/')
 def index():
-    return render_template('unified_voter_portal.html')
+    return render_template('decentralised_voter_portal.html')
 
 @app.route('/voter-portal')
 def voter_portal():
@@ -396,7 +396,7 @@ def voting_page():
 
 @app.route('/admin')
 def admin_panel():
-    return render_template('enhanced_admin.html')
+    return render_template('decentralised_admin.html')
 
 # Google Sign-In Authentication Routes
 @app.route('/verify-google-token', methods=['POST'])
@@ -567,7 +567,7 @@ def upload_photo():
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)})
 
-# Additional routes for enhanced functionality
+# Additional routes for decentralised functionality
 @app.route('/election-status')
 def election_status():
     try:
@@ -960,7 +960,7 @@ def load_voters():
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)})
 
-# Additional routes for unified voter portal
+# Additional routes for decentralised voter portal
 @app.route('/check-voter', methods=['POST'])
 def check_voter():
     try:
@@ -1127,7 +1127,7 @@ def admin_logout():
 if __name__ == '__main__':
     import os
     
-    print("🗳️  Unified Voting Portal System")
+    print("🗳️  Decentralised Voting Portal System")
     print("=" * 40)
     
     # Get port from environment variable (for Heroku/Railway/etc)
@@ -1144,7 +1144,7 @@ if __name__ == '__main__':
         print("🔑 Admin Password: admin123")
     
     print("=" * 40)
-    print("✨ Unified Features:")
+    print("✨ Decentralised Features:")
     print("   • Google Sign-In authentication")
     print("   • Email-based voter verification")
     print("   • Single portal for all voting activities")

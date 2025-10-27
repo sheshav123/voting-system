@@ -1,4 +1,4 @@
-// Unified Voter Portal JavaScript with Firebase OTP and Voting Integration
+// Decentralised Voter Portal JavaScript with Firebase OTP and Voting Integration
 
 // Firebase Configuration for Google Sign-In
 const firebaseConfig = {

@@ -1,6 +1,6 @@
-# Enhanced Voting System 🗳️
+# Decentralised Voting System 🗳️
 
-A secure, modern voting application with Firebase integration, Google authentication, and real-time results.
+A secure, decentralised voting application with Firebase integration, Google authentication, and real-time results.
 
 ## Features ✨
 
@@ -64,7 +64,7 @@ A secure, modern voting application with Firebase integration, Google authentica
 
 6. **Run the application**
    ```bash
-   python enhanced_voting_app.py
+   python decentralised_voting_app.py
    ```
 
 7. **Access the application**

@@ -1,6 +1,6 @@
 {
-  "name": "Enhanced Voting System",
-  "description": "A secure voting application with Firebase integration and Google authentication",
+  "name": "Decentralised Voting System",
+  "description": "A secure decentralised voting application with Firebase integration and Google authentication",
   "repository": "https://github.com/yourusername/voting-system",
   "keywords": ["python", "flask", "voting", "firebase", "authentication"],
   "env": {
