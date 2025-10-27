@@ -1106,6 +1106,23 @@ def auth_status():
 def debug_firebase():
     return render_template('debug_firebase.html')
 
+@app.route('/health')
+def health_check():
+    """Simple health check endpoint"""
+    try:
+        return jsonify({
+            'status': 'healthy',
+            'app_name': 'Decentralised Voting System',
+            'firebase_initialized': firebase_auth_service.initialized,
+            'timestamp': datetime.now().isoformat()
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'error': str(e),
+            'timestamp': datetime.now().isoformat()
+        }), 500
+
 @app.route('/logout', methods=['POST'])
 def logout():
     try:
@@ -1126,31 +1143,45 @@ def admin_logout():
 
 if __name__ == '__main__':
     import os
+    import sys
     
-    print("🗳️  Decentralised Voting Portal System")
-    print("=" * 40)
-    
-    # Get port from environment variable (for Heroku/Railway/etc)
-    port = int(os.environ.get('PORT', 3000))
-    debug_mode = os.environ.get('FLASK_ENV') == 'development'
-    
-    if debug_mode:
-        print(f"🎯 Main Portal: http://localhost:{port}")
-        print(f"🔧 Admin Panel: http://localhost:{port}/admin")
-        print("🔑 Admin Password: admin123")
-    else:
-        print("🌐 Production mode - check your hosting platform for URL")
-        print("🔧 Admin Panel: /admin")
-        print("🔑 Admin Password: admin123")
-    
-    print("=" * 40)
-    print("✨ Decentralised Features:")
-    print("   • Google Sign-In authentication")
-    print("   • Email-based voter verification")
-    print("   • Single portal for all voting activities")
-    print("   • Integrated voting & results")
-    print("   • Real-time election status")
-    print("   • Voter ID cards with photos")
-    print("=" * 40)
-    
-    app.run(debug=debug_mode, host='0.0.0.0', port=port)
+    try:
+        print("🗳️  Decentralised Voting Portal System")
+        print("=" * 40)
+        
+        # Get port from environment variable (for Heroku/Railway/etc)
+        port = int(os.environ.get('PORT', 3000))
+        debug_mode = os.environ.get('FLASK_ENV') == 'development'
+        
+        print(f"🔧 Python version: {sys.version}")
+        print(f"🔧 Port: {port}")
+        print(f"🔧 Debug mode: {debug_mode}")
+        print(f"🔧 Firebase initialized: {firebase_auth_service.initialized}")
+        
+        if debug_mode:
+            print(f"🎯 Main Portal: http://localhost:{port}")
+            print(f"🔧 Admin Panel: http://localhost:{port}/admin")
+            print("🔑 Admin Password: admin123")
+        else:
+            print("🌐 Production mode - check your hosting platform for URL")
+            print("🔧 Admin Panel: /admin")
+            print("🔑 Admin Password: admin123")
+        
+        print("=" * 40)
+        print("✨ Decentralised Features:")
+        print("   • Google Sign-In authentication")
+        print("   • Email-based voter verification")
+        print("   • Single portal for all voting activities")
+        print("   • Integrated voting & results")
+        print("   • Real-time election status")
+        print("   • Voter ID cards with photos")
+        print("=" * 40)
+        
+        print("🚀 Starting Flask application...")
+        app.run(debug=debug_mode, host='0.0.0.0', port=port)
+        
+    except Exception as e:
+        print(f"❌ Error starting application: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
