@@ -1,0 +1,49 @@
+{
+  "name": "Enhanced Voting System",
+  "description": "A secure voting application with Firebase integration and Google authentication",
+  "repository": "https://github.com/yourusername/voting-system",
+  "keywords": ["python", "flask", "voting", "firebase", "authentication"],
+  "env": {
+    "FAST2SMS_API_KEY": {
+      "description": "API key for Fast2SMS service",
+      "required": false
+    },
+    "FIREBASE_API_KEY": {
+      "description": "Firebase API key",
+      "required": true
+    },
+    "FIREBASE_AUTH_DOMAIN": {
+      "description": "Firebase auth domain",
+      "required": true
+    },
+    "FIREBASE_DATABASE_URL": {
+      "description": "Firebase database URL",
+      "required": true
+    },
+    "FIREBASE_PROJECT_ID": {
+      "description": "Firebase project ID",
+      "required": true
+    },
+    "FIREBASE_STORAGE_BUCKET": {
+      "description": "Firebase storage bucket",
+      "required": true
+    },
+    "FIREBASE_MESSAGING_SENDER_ID": {
+      "description": "Firebase messaging sender ID",
+      "required": true
+    },
+    "FIREBASE_APP_ID": {
+      "description": "Firebase app ID",
+      "required": true
+    },
+    "ADMIN_SECRET_KEY": {
+      "description": "Admin panel secret key",
+      "value": "admin123"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ]
+}
