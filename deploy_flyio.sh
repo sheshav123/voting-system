@@ -1,0 +1,77 @@
+#!/bin/bash
+# Quick deploy script for Fly.io
+
+echo "🚀 Deploying to Fly.io..."
+echo ""
+
+# Check if flyctl is installed
+if ! command -v flyctl &> /dev/null; then
+    echo "❌ flyctl not found. Installing..."
+    curl -L https://fly.io/install.sh | sh
+    echo "✅ Please restart your terminal and run this script again"
+    exit 1
+fi
+
+# Launch or deploy
+if [ ! -f "fly.toml" ]; then
+    echo "📝 First time setup - launching app..."
+    flyctl launch --no-deploy
+    echo ""
+fi
+
+# Set secrets from firebase-service-account.json
+echo "🔐 Setting Firebase secrets..."
+
+flyctl secrets set \
+  FIREBASE_PROJECT_ID="voting-system-2024" \
+  FIREBASE_PRIVATE_KEY_ID="6be5f0d9c05134c89ee9de7d32a85d3e1c70a940" \
+  FIREBASE_CLIENT_EMAIL="firebase-adminsdk-fbsvc@voting-system-2024.iam.gserviceaccount.com" \
+  FIREBASE_CLIENT_ID="112735651629023911145" \
+  FIREBASE_AUTH_URI="https://accounts.google.com/o/oauth2/auth" \
+  FIREBASE_TOKEN_URI="https://oauth2.googleapis.com/token" \
+  FIREBASE_AUTH_PROVIDER_CERT_URL="https://www.googleapis.com/oauth2/v1/certs" \
+  FIREBASE_CLIENT_CERT_URL="https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40voting-system-2024.iam.gserviceaccount.com" \
+  FLASK_ENV="production"
+
+# Set the private key (needs special handling for newlines)
+echo "🔑 Setting private key..."
+flyctl secrets set FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCshthX40FccKbk
+WdWFn42z/4kiEHKVFazuQNH4ggQyX/M92L5gO6llfN+q/s9OGPrVyBXGspwbDtS9
+UE2oZkXIQsYgoyC3BgbERBib/pBuocfvxhPZS0HdW1PdAYG4tFWNcshJA8dFVlr0
+NVJUCMTbwSdm0rBN7h/e0NxrqTL+yV/UuNyjlKXCPImZUczNWrpbAOiIhsfmBIox
+P6Lv0vNotOQj7M0YHhmm5PYlx5R6y149H0x+71XA92MGbbw8DiBCWp4B2eFLuO6o
+3JxeH2BwZRzNvyyFW+y8LT/M+enSvJycOPdxmLBN6ASf6Agd4yqjt+KK1dKfLobW
+oU3mgvEvAgMBAAECggEADA4GYwQa0D3oa19oVZENP0NFO0wXtX/X0kEiBFGRWYCH
+m0ETWRLSIA7Wa591fLXiHbqzsTgc3QciqXFJYjeplV4upp+MIAqCKCFZ8HLPd+t1
+8BsDzm49VYPI6FHvbnVE3qbjUVBVeOxmKCO4DO2DIJe7P3cy1Avymu8Dd8JRMQ9j
+oNsYURrY/qLm33BLNjqwArXoW0MI8SyzhJMqjF7dJDcnjCIsjVdRXdKcwAs07FcF
+hpeVByqkoIv4k2lzCrE0Q3azQifFtBsXt7bQIrKco71UqxwTCZMt74KQglnXCHFY
+29EFNpr2yIkZOHgAAR6rV/mDe5qXGf1SqZoTX+HkgQKBgQDbNp4qrVzzkISpKWW/
+FTpO2Btmc0358A57e8fB3UO8mEZwcpQe9nh/Oy9wzTFoewIXtKU9wgjA/13oMzQ5
+j1CLhhJwDtF4XWKhApJ4GVfwAid43efdPxkO6ba2Gv9kK/BsdtweeIe4351csty7
+Tm5p0ozjz+EUUhb0rgYIuyZhewKBgQDJepNLfO2a8blbkMvLKcDmBYR27QyPpgl5
+Qmwe/xH97pqErtXHj88t5r7yroxpp3WgeOVIO8GbG4z71/EN+2Vxlv7Qbazpm9JV
+L2fvraMpDcuSSn/u5DyLBZlr5xGcmfw9AZFip3rXCK90fsaqwe8jBGsdZKg0HcuM
+Z5TR8L8+3QKBgBC8A6kIYP8q+iWbxmum6DOapcTVao949vIQSfiPtpsQGNh+trYC
+ZMJ5ty5qS6pJMaiznqWvSVHKbNXMCuGWAjUUgBXT28PPhTb7ZkkKzj7BO1grwIaQ
+SY5s4wjV2MdB33G4RSeCVgIT+ARalyUpYJ5td1nwxaLyfVQicM170/s/AoGBAJAS
+puGEJCR4ViO0FwbghJ/3shGY0TKneH7NkKNZonQC+1uF6jkaDPy11DWVu7KRnPtz
+eAF/OaLAwMAWWrm024Wug+hnhQ5H7tAbZidt8w6YXsntnC4n52NCTcNrKJzjQAwf
+4ua4/I5oF48mWMoig+52amJKaD1cUQHF0BWQIjHBAoGAWhtGnFGkR4vWYI2Rrd7a
+EScoMbtirTUZ6hbKme1CyD/i7i3nbsoyIHSrprgfThENMg82K5oVYQc2nsLKJxac
+ttVv5Ch0odZWpVJ2QSbp7kLHstDBrYSe3mk8GWMkFnA78frc9M8IrP5OGvo+qzaX
+orjkxFsvdNS8dWl4KpmtltM=
+-----END PRIVATE KEY-----"
+
+echo ""
+echo "🚀 Deploying app..."
+flyctl deploy
+
+echo ""
+echo "✅ Done! Your app should be live at:"
+flyctl status --json | grep hostname || echo "Run: flyctl status"
+echo ""
+echo "📝 Next steps:"
+echo "1. Add your Fly.io domain to Firebase authorized domains"
+echo "2. Visit /admin with password: admin123"

@@ -1,1 +1,1 @@
-web: python decentralised_voting_app.py
+web: gunicorn decentralised_voting_app:app --bind 0.0.0.0:$PORT

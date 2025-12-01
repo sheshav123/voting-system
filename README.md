@@ -1,4 +1,8 @@
-# Decentralised Voting System 🗳️
+# Decentralised Voting System
+
+## 🚀 Free Deployment on PythonAnywhere
+
+This app can be deployed **FREE for lifetime** on PythonAnywhere! See [PYTHONANYWHERE_SETUP.md](PYTHONANYWHERE_SETUP.md) for detailed deployment instructions. 🗳️
 
 A secure, decentralised voting application with Firebase integration, Google authentication, and real-time results.
 
